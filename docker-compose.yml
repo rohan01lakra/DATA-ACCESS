@@ -1,31 +1,14 @@
 services:
-  ntopng:
-    image: ntop/ntopng:latest
-    hostname: ntop
-    container_name: ntop
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
     restart: always
-    network_mode: host
-    # Port mapping (disable network_mode: host)
-    #ports:
-    #  - 3000:3000
+    environment:
+      # Initial administrator credentials
+      - ZO_ROOT_USER_EMAIL=admin@example.com
+      - ZO_ROOT_USER_PASSWORD=ComplexPassword123
+    ports:
+      - "5080:5080"      # Web UI and API
+      - "514:5514/udp"   # Syslog UDP
+      - "514:5514/tcp"   # Syslog TCP
     volumes:
-      - /etc/ntopng.license:/etc/ntopng.license:ro
-      - ntopng_redis:/var/lib/redis
-    command: [ '-i', 'tcp://*:5556c', '-F', 'clickhouse', '--disable-login', '1' ]
-    depends_on:
-      - clickhouse
-
-  clickhouse:
-    image: clickhouse/clickhouse-server:latest
-    hostname: clickhouse
-    container_name: clickhouse
-    restart: always
-    network_mode: host
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/log/clickhouse-server
-
-volumes:
-  clickhouse_data:
-  clickhouse_logs:
-  ntopng_redis:
+      - ./data:/data     # Persistent storage for logs, metrics, and traces
