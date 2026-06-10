@@ -1,0 +1,58 @@
+services:
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve-enterprise:v0.90.3
+    platform: linux/amd64
+    container_name: openobserve-enterprise
+    restart: unless-stopped
+    ports:
+      - "5080:5080"
+    environment:
+      ZO_ROOT_USER_EMAIL: admin@example.com
+      ZO_ROOT_USER_PASSWORD: 'Rahul@7503642684#'
+      ZO_LOCAL_MODE: "true"
+      ZO_DATA_DIR: /data
+    volumes:
+      - openobserve_enterprise_data:/data
+
+  vector:
+    image: timberio/vector:0.34.X-debian
+    container_name: vector-syslog-receiver
+    restart: unless-stopped
+    ports:
+      - "5140:5140/udp"
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+    depends_on:
+      - openobserve
+
+  goflow2:
+    image: ghcr.io/openobserve/goflow2:80c7e5d
+    platform: linux/amd64
+    container_name: ipfix-receiver
+    restart: unless-stopped
+    ports:
+      - "4739:4739/udp"
+    command:
+      - "-listen=netflow://:4739"
+      - "-transport=http"
+      - "-transport.http.destination=http://openobserve:5080/api/default/netflow/_json"
+      - "-transport.http.auth.header=Authorization"
+      - "-transport.http.auth.credentials=Basic YWRtaW5AZXhhbXBsZS5jb206UmFodWxANzUwMzY0MjY4NCM="
+      - "-format=json"
+    depends_on:
+      - openobserve
+
+  telegraf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegraf-snmp
+    restart: unless-stopped
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - openobserve
+
+volumes:
+  openobserve_enterprise_data:
+    driver: local
