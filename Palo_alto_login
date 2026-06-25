@@ -1,23 +1,34 @@
 if contains(string!(.message), "logged in") {
-    m = parse_regex!(string!(.message), r'User\s+(?P<username>\S+)\s+logged in via\s+(?P<login_method>\S+)\s+from\s+(?P<source_ip>\d+\.\d+\.\d+\.\d+)')
 
-    .username = m.username
-    .login_method = m.login_method
-    .login_source_ip = m.source_ip
-    .event_type = "login"
+  m, err = parse_regex(
+      string!(.message),
+      r'msg=User\s+(?P<username>\S+)\s+logged in via\s+(?P<method>\S+)\s+from\s+(?P<ip>\d+\.\d+\.\d+\.\d+)'
+  )
+
+  if err == null {
+      .username = m.username
+      .login_method = m.method
+      .login_ip = m.ip
+      .event_type = "login"
+  }
+
+  fw, err = parse_regex(
+      string!(.message),
+      r'dvchost=(?P<firewall>[^\s]+)'
+  )
+
+  if err == null {
+      .firewall = fw.firewall
+  }
 }
 
-
-
-
-
-
 SELECT
-    timestamp,
+    _timestamp,
     hostname,
+    firewall,
     username,
     login_method,
-    login_source_ip
+    login_ip
 FROM "syslog"
-WHERE event_type = 'login'
-ORDER BY timestamp DESC;
+WHERE event_type='login'
+ORDER BY _timestamp DESC;
