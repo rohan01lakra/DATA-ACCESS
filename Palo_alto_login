@@ -1,50 +1,280 @@
-.event_category = "administrator"
+# ==========================================
+# Palo Alto Configuration Parser
+# OpenObserve OSS v0.90.3
+# ==========================================
 
-if contains!(string!(.message), "logged in") {
-    .event_action = "login"
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
 }
 
-if contains!(string!(.message), "logged out") {
-    .event_action = "logout"
+# Default category
+if contains(msg, "commit") || contains(msg, "Commit") {
+    .event_category = "configuration"
 }
 
-.event_category = "administrator"
-
-msg = string!(.message)
-
-if contains!(msg, "User") {
-
-    parts = split!(msg, "User ")
-
-    if length(parts) > 1 {
-
-        name = split!(parts[1], " ")
-
-        .username = name[0]
-
-    }
+# Commit
+if contains(msg, "Configuration committed") {
+    .event_action = "commit_success"
 }
 
-msg = string!(.message)
-
-parts = split!(msg, "logged in via ")
-
-if length(parts) > 1 {
-
-    method = split!(parts[1], " ")
-
-    .login_method = method[0]
-
+if contains(msg, "commit") && !exists(.event_action) {
+    .event_action = "commit"
 }
 
-msg = string!(.message)
-
-parts = split!(msg, "from ")
-
-if length(parts) > 1 {
-
-    ip = split!(parts[1], " ")
-
-    .login_ip = ip[0]
-
+# Candidate configuration
+if contains(msg, "candidate configuration") {
+    .config_state = "candidate"
 }
+
+# Running configuration
+if contains(msg, "running configuration") {
+    .config_state = "running"
+}
+
+# Security policy
+if contains(msg, "security policy") {
+    .config_type = "security_policy"
+}
+
+# NAT
+if contains(msg, "nat rule") || contains(msg, "NAT") {
+    .config_type = "nat"
+}
+
+# Address object
+if contains(msg, "address object") {
+    .config_type = "address_object"
+}
+
+# Address group
+if contains(msg, "address group") {
+    .config_type = "address_group"
+}
+
+# Service
+if contains(msg, "service object") {
+    .config_type = "service_object"
+}
+
+# Service group
+if contains(msg, "service group") {
+    .config_type = "service_group"
+}
+
+# Zone
+if contains(msg, "zone") {
+    .config_type = "zone"
+}
+
+# Virtual Router
+if contains(msg, "virtual router") {
+    .config_type = "virtual_router"
+}
+
+# Device Group
+if contains(msg, "device group") {
+    .config_type = "device_group"
+}
+
+# Template
+if contains(msg, "template") {
+    .config_type = "template"
+}
+
+# Panorama
+if contains(msg, "Panorama") {
+    .managed_by = "Panorama"
+}
+
+# Local firewall
+if !exists(.managed_by) {
+    .managed_by = "Local"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# Palo Alto Traffic Parser
+# OpenObserve OSS v0.90.3
+# ==========================================
+
+.event_category = "traffic"
+
+# Source IP
+if exists(.src) {
+    .src_ip = string!(.src)
+}
+
+# Destination IP
+if exists(.dst) {
+    .dst_ip = string!(.dst)
+}
+
+# Source Port
+if exists(.spt) {
+    .src_port = to_int!(.spt)
+}
+
+# Destination Port
+if exists(.dpt) {
+    .dst_port = to_int!(.dpt)
+}
+
+# Application
+if exists(.app) {
+    .application = string!(.app)
+}
+
+# User
+if exists(.suser) {
+    .username = string!(.suser)
+}
+
+# Rule
+if exists(.cs1) {
+    .security_rule = string!(.cs1)
+}
+
+# Action
+if exists(.act) {
+    .action = string!(.act)
+}
+
+# Protocol
+if exists(.proto) {
+    .protocol = string!(.proto)
+}
+
+# Bytes
+if exists(.in) {
+    .bytes_in = to_int!(.in)
+}
+
+if exists(.out) {
+    .bytes_out = to_int!(.out)
+}
+
+# Total Bytes
+if exists(.cnt) {
+    .packets = to_int!(.cnt)
+}
+
+# Session
+if exists(.externalId) {
+    .session_id = string!(.externalId)
+}
+
+# Zone
+if exists(.cs2) {
+    .source_zone = string!(.cs2)
+}
+
+if exists(.cs3) {
+    .destination_zone = string!(.cs3)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT
+    dst_ip,
+    COUNT(*) AS sessions
+FROM "syslog"
+WHERE event_category='traffic'
+GROUP BY dst_ip
+ORDER BY sessions DESC
+LIMIT 20;
