@@ -1,5 +1,5 @@
 # ==========================================
-# Interface Parser (OpenObserve v0.90.3)
+# Authentication Parser
 # ==========================================
 
 msg = ""
@@ -10,42 +10,685 @@ if exists(.msg) {
     msg = string!(.message)
 }
 
-if contains(msg, "ethernet") {
-    .event_category = "interface"
+if contains(msg, "authentication") {
+    .event_category = "authentication"
 }
 
-if contains(msg, "interface") {
-    .event_category = "interface"
+if contains(msg, "login") {
+    .event_category = "authentication"
 }
 
-if contains(msg, "link up") {
-    .interface_status = "UP"
+if contains(msg, "logout") {
+    .event_category = "authentication"
 }
 
-if contains(msg, "link down") {
-    .interface_status = "DOWN"
+if contains(msg, "success") {
+    .auth_result = "SUCCESS"
 }
 
-if contains(msg, "administratively down") {
-    .interface_status = "ADMIN_DOWN"
+if contains(msg, "failed") {
+    .auth_result = "FAILED"
 }
 
-if contains(msg, "flap") {
-    .event_action = "FLAP"
+if contains(msg, "RADIUS") {
+    .auth_server = "RADIUS"
 }
 
-if contains(msg, "speed") {
-    .event_action = "SPEED_CHANGE"
+if contains(msg, "LDAP") {
+    .auth_server = "LDAP"
 }
 
-if contains(msg, "duplex") {
-    .event_action = "DUPLEX_CHANGE"
+if contains(msg, "TACACS") {
+    .auth_server = "TACACS"
 }
 
-if exists(.cs1) {
-    .interface = string!(.cs1)
+if contains(msg, "SAML") {
+    .auth_server = "SAML"
 }
 
-if exists(.deviceCustomString1) {
-    .interface = string!(.deviceCustomString1)
+if exists(.suser) {
+    .username = string!(.suser)
 }
+
+if exists(.src) {
+    .source_ip = string!(.src)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# User-ID Parser
+# ==========================================
+
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
+}
+
+if contains(msg, "User-ID") {
+    .event_category = "userid"
+}
+
+if contains(msg, "ip-user-mapping") {
+    .event_category = "userid"
+}
+
+if contains(msg, "registered") {
+    .event_action = "REGISTER"
+}
+
+if contains(msg, "removed") {
+    .event_action = "REMOVE"
+}
+
+if contains(msg, "timeout") {
+    .event_action = "TIMEOUT"
+}
+
+if exists(.src) {
+    .ip_address = string!(.src)
+}
+
+if exists(.suser) {
+    .username = string!(.suser)
+}
+
+if exists(.deviceExternalId) {
+    .collector = string!(.deviceExternalId)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# Panorama Parser
+# ==========================================
+
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
+}
+
+if contains(msg, "Panorama") {
+    .event_category = "panorama"
+}
+
+if contains(msg, "device group") {
+    .event_category = "panorama"
+}
+
+if contains(msg, "template") {
+    .event_category = "panorama"
+}
+
+if contains(msg, "Commit") {
+    .event_action = "COMMIT"
+}
+
+if contains(msg, "Push") {
+    .event_action = "PUSH"
+}
+
+if contains(msg, "Device Group") {
+    .object_type = "DEVICE_GROUP"
+}
+
+if contains(msg, "Template") {
+    .object_type = "TEMPLATE"
+}
+
+if contains(msg, "Collector") {
+    .object_type = "COLLECTOR"
+}
+
+if exists(.deviceExternalId) {
+    .managed_firewall = string!(.deviceExternalId)
+}
+
+if exists(.dvchost) {
+    .panorama = string!(.dvchost)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# WildFire Parser
+# OpenObserve OSS v0.90.3
+# ==========================================
+
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
+}
+
+if contains(msg,"WildFire") {
+    .event_category = "wildfire"
+}
+
+if contains(msg,"malicious") {
+    .verdict = "MALICIOUS"
+}
+
+if contains(msg,"benign") {
+    .verdict = "BENIGN"
+}
+
+if contains(msg,"grayware") {
+    .verdict = "GRAYWARE"
+}
+
+if contains(msg,"phishing") {
+    .verdict = "PHISHING"
+}
+
+if exists(.fname) {
+    .filename = string!(.fname)
+}
+
+if exists(.filedigest) {
+    .sha256 = string!(.filedigest)
+}
+
+if exists(.src) {
+    .src_ip = string!(.src)
+}
+
+if exists(.dst) {
+    .dst_ip = string!(.dst)
+}
+
+if exists(.suser) {
+    .username = string!(.suser)
+}
+
+if exists(.act) {
+    .action = string!(.act)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# SSL Decryption Parser
+# ==========================================
+
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
+}
+
+if contains(msg,"Decryption") {
+    .event_category = "decryption"
+}
+
+if contains(msg,"SSL") {
+    .event_category = "decryption"
+}
+
+if contains(msg,"TLS") {
+    .event_category = "decryption"
+}
+
+if contains(msg,"success") {
+    .decrypt_status = "SUCCESS"
+}
+
+if contains(msg,"failure") {
+    .decrypt_status = "FAILED"
+}
+
+if contains(msg,"certificate") {
+    .event_action = "CERTIFICATE"
+}
+
+if exists(.request) {
+    .url = string!(.request)
+}
+
+if exists(.src) {
+    .src_ip = string!(.src)
+}
+
+if exists(.dst) {
+    .dst_ip = string!(.dst)
+}
+
+if exists(.app) {
+    .application = string!(.app)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# GlobalProtect Parser
+# ==========================================
+
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
+}
+
+if contains(msg,"GlobalProtect") {
+    .event_category = "globalprotect"
+}
+
+if contains(msg,"connected") {
+    .connection_state = "CONNECTED"
+}
+
+if contains(msg,"disconnected") {
+    .connection_state = "DISCONNECTED"
+}
+
+if contains(msg,"portal") {
+    .gp_component = "PORTAL"
+}
+
+if contains(msg,"gateway") {
+    .gp_component = "GATEWAY"
+}
+
+if exists(.suser) {
+    .username = string!(.suser)
+}
+
+if exists(.src) {
+    .client_ip = string!(.src)
+}
+
+if exists(.dst) {
+    .gateway_ip = string!(.dst)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# ACC Analytics Parser
+# ==========================================
+
+.event_category = "acc"
+
+if exists(.app) {
+    .application = string!(.app)
+}
+
+if exists(.src) {
+    .src_ip = string!(.src)
+}
+
+if exists(.dst) {
+    .dst_ip = string!(.dst)
+}
+
+if exists(.suser) {
+    .username = string!(.suser)
+}
+
+if exists(.act) {
+    .action = string!(.act)
+}
+
+if exists(.proto) {
+    .protocol = string!(.proto)
+}
+
+if exists(.in) {
+    .bytes_in = to_int!(.in)
+}
+
+if exists(.out) {
+    .bytes_out = to_int!(.out)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==========================================
+# Audit & Compliance Parser
+# ==========================================
+
+msg = ""
+
+if exists(.msg) {
+    msg = string!(.msg)
+} else {
+    msg = string!(.message)
+}
+
+.event_category = "audit"
+
+if contains(msg,"login") {
+    .audit_type = "LOGIN"
+}
+
+if contains(msg,"logout") {
+    .audit_type = "LOGOUT"
+}
+
+if contains(msg,"commit") {
+    .audit_type = "COMMIT"
+}
+
+if contains(msg,"configuration") {
+    .audit_type = "CONFIGURATION"
+}
+
+if contains(msg,"policy") {
+    .audit_type = "SECURITY_POLICY"
+}
+
+if contains(msg,"administrator") {
+    .audit_type = "ADMIN"
+}
+
+if exists(.suser) {
+    .username = string!(.suser)
+}
+
+if exists(.src) {
+    .source_ip = string!(.src)
+}
+
+if exists(.act) {
+    .action = string!(.act)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
