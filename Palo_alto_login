@@ -1,34 +1,54 @@
-if contains(string!(.message), "logged in") {
+.firewall = ""
 
-  m, err = parse_regex(
-      string!(.message),
-      r'msg=User\s+(?P<username>\S+)\s+logged in via\s+(?P<method>\S+)\s+from\s+(?P<ip>\d+\.\d+\.\d+\.\d+)'
-  )
-
-  if err == null {
-      .username = m.username
-      .login_method = m.method
-      .login_ip = m.ip
-      .event_type = "login"
-  }
-
-  fw, err = parse_regex(
-      string!(.message),
-      r'dvchost=(?P<firewall>[^\s]+)'
-  )
-
-  if err == null {
-      .firewall = fw.firewall
-  }
+if exists(.dvchost) {
+    .firewall = string!(.dvchost)
 }
 
+.device = .firewall
+
+if exists(.deviceExternalId) {
+    .serial = string!(.deviceExternalId)
+}
+
+if exists(.cs3) {
+    .vsys = string!(.cs3)
+}
+
+
+
+
+if exists(.msg) {
+
+    msg = string!(.msg)
+
+    if contains(msg,"logged in") {
+
+        .event_category = "administrator"
+        .event_action = "login"
+
+    }
+
+    if contains(msg,"logged out") {
+
+        .event_category = "administrator"
+        .event_action = "logout"
+
+    }
+
+}
+
+
+
+
+
+
+
 SELECT
-    _timestamp,
-    hostname,
-    firewall,
-    username,
-    login_method,
-    login_ip
-FROM "syslog"
-WHERE event_type='login'
-ORDER BY _timestamp DESC;
+_timestamp,
+firewall,
+event_category,
+event_action,
+msg
+FROM "paloalto"
+ORDER BY _timestamp DESC
+LIMIT 100
