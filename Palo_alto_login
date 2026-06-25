@@ -1,0 +1,23 @@
+if contains(string!(.message), "logged in") {
+    m = parse_regex!(string!(.message), r'User\s+(?P<username>\S+)\s+logged in via\s+(?P<login_method>\S+)\s+from\s+(?P<source_ip>\d+\.\d+\.\d+\.\d+)')
+
+    .username = m.username
+    .login_method = m.login_method
+    .login_source_ip = m.source_ip
+    .event_type = "login"
+}
+
+
+
+
+
+
+SELECT
+    timestamp,
+    hostname,
+    username,
+    login_method,
+    login_source_ip
+FROM "syslog"
+WHERE event_type = 'login'
+ORDER BY timestamp DESC;
