@@ -1,54 +1,50 @@
-.firewall = ""
+.event_category = "administrator"
 
-if exists(.dvchost) {
-    .firewall = string!(.dvchost)
+if contains!(string!(.message), "logged in") {
+    .event_action = "login"
 }
 
-.device = .firewall
-
-if exists(.deviceExternalId) {
-    .serial = string!(.deviceExternalId)
+if contains!(string!(.message), "logged out") {
+    .event_action = "logout"
 }
 
-if exists(.cs3) {
-    .vsys = string!(.cs3)
-}
+.event_category = "administrator"
 
+msg = string!(.message)
 
+if contains!(msg, "User") {
 
+    parts = split!(msg, "User ")
 
-if exists(.msg) {
+    if length(parts) > 1 {
 
-    msg = string!(.msg)
+        name = split!(parts[1], " ")
 
-    if contains(msg,"logged in") {
-
-        .event_category = "administrator"
-        .event_action = "login"
+        .username = name[0]
 
     }
+}
 
-    if contains(msg,"logged out") {
+msg = string!(.message)
 
-        .event_category = "administrator"
-        .event_action = "logout"
+parts = split!(msg, "logged in via ")
 
-    }
+if length(parts) > 1 {
+
+    method = split!(parts[1], " ")
+
+    .login_method = method[0]
 
 }
 
+msg = string!(.message)
 
+parts = split!(msg, "from ")
 
+if length(parts) > 1 {
 
+    ip = split!(parts[1], " ")
 
+    .login_ip = ip[0]
 
-
-SELECT
-_timestamp,
-firewall,
-event_category,
-event_action,
-msg
-FROM "paloalto"
-ORDER BY _timestamp DESC
-LIMIT 100
+}
