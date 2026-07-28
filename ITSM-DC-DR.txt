@@ -4,24 +4,19 @@ parsed, err = parse_cef(.message)
 
 if err == null {
     . |= parsed
-}
 
-# Palo Alto
-if exists(.deviceVendor) {
-    if string!(.deviceVendor) == "Palo Alto Networks" {
-        .vendor = "paloalto"
+    if exists(.deviceVendor) {
+
+        vendor = downcase(string!(.deviceVendor))
+
+        if vendor == "palo alto networks" {
+            .vendor = "paloalto"
+        } else if vendor == "imperva" {
+            .vendor = "waf"
+        } else if vendor == "f5" {
+            .vendor = "waf"
+        } else if vendor == "fortinet" && exists(.deviceProduct) && contains(downcase(string!(.deviceProduct)), "fortiweb") {
+            .vendor = "waf"
+        }
     }
-}
-
-# WAF Example
-if contains(string!(.message), "Imperva") {
-    .vendor = "waf"
-}
-
-if contains(string!(.message), "F5") {
-    .vendor = "waf"
-}
-
-if contains(string!(.message), "FortiWeb") {
-    .vendor = "waf"
 }
