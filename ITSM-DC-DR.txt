@@ -1,5 +1,15 @@
-config firewall service group
-    edit "REPLICATION_SERVICE_GROUP"
-        set member "SSH" "HTTP" "HTTPS" "NTP" "SMB" "TCP_2049" "TCP_2379" "TCP_2380" "TCP_2738" "TCP_3000" "TCP_3260" "TCP_3443" "TCP_5432" "TCP_5443" "TCP_7738" "TCP_8008" "TCP_8080" "TCP_8081" "TCP_8082" "TCP_8404" "TCP_8443" "TCP_8873" "TCP_9090" "TCP_11434" "PING"
-    next
-end
+parsed, err = parse_cef(.message)
+
+if err == null {
+    . |= parsed
+
+    if exists(.deviceVendor) &&
+       string!(.deviceVendor) == "Palo Alto Networks" {
+
+        # keep only Palo Alto logs
+        .
+
+    } else {
+        abort
+    }
+}
