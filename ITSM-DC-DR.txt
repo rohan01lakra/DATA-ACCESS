@@ -1,15 +1,27 @@
+.vendor = "unknown"
+
 parsed, err = parse_cef(.message)
 
 if err == null {
     . |= parsed
+}
 
-    if exists(.deviceVendor) &&
-       string!(.deviceVendor) == "Palo Alto Networks" {
-
-        # keep only Palo Alto logs
-        .
-
-    } else {
-        abort
+# Palo Alto
+if exists(.deviceVendor) {
+    if string!(.deviceVendor) == "Palo Alto Networks" {
+        .vendor = "paloalto"
     }
+}
+
+# WAF Example
+if contains(string!(.message), "Imperva") {
+    .vendor = "waf"
+}
+
+if contains(string!(.message), "F5") {
+    .vendor = "waf"
+}
+
+if contains(string!(.message), "FortiWeb") {
+    .vendor = "waf"
 }
