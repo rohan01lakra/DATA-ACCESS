@@ -1,22 +1,28 @@
-.vendor = "unknown"
+#!/bin/bash
 
-parsed, err = parse_cef(.message)
+BASE="/var/lib/docker/volumes/data-access_openobserve_enterprise_data/_data/stream/files/default/logs"
 
-if err == null {
-    . |= parsed
+KEEP_DAYS=14
+CUTOFF=$(date -d "$KEEP_DAYS days ago" +%Y%m%d)
 
-    if exists(.deviceVendor) {
+for TYPE in syslog netflow; do
+    find "$BASE/$TYPE" -mindepth 3 -maxdepth 3 -type d | while read DIR; do
+        YEAR=$(basename "$(dirname "$(dirname "$DIR")")")
+        MONTH=$(basename "$(dirname "$DIR")")
+        DAY=$(basename "$DIR")
 
-        vendor = downcase(string!(.deviceVendor))
+        DATE="${YEAR}${MONTH}${DAY}"
 
-        if vendor == "palo alto networks" {
-            .vendor = "paloalto"
-        } else if vendor == "imperva" {
-            .vendor = "waf"
-        } else if vendor == "f5" {
-            .vendor = "waf"
-        } else if vendor == "fortinet" && exists(.deviceProduct) && contains(downcase(string!(.deviceProduct)), "fortiweb") {
-            .vendor = "waf"
-        }
-    }
-}
+        if [[ "$DATE" -lt "$CUTOFF" ]]; then
+            echo "Deleting $DIR"
+            rm -rf "$DIR"
+        fi
+    done
+done
+
+# Remove empty month/year directories
+find "$BASE" -type d -empty -delete
+
+
+
+0 2 * * * /usr/local/bin/openobserve_cleanup.sh >> /var/log/openobserve_cleanup.log 2>&1
