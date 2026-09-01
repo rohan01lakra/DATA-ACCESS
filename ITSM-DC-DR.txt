@@ -1,28 +1,39 @@
-#!/bin/bash
+set security address-book global address META-31-13-0-0_17 31.13.0.0/17
+set security address-book global address META-45-64-40-0_22 45.64.40.0/22
+set security address-book global address META-57-141-0-0_27 57.141.0.0/27
+set security address-book global address META-57-144-0-0_14 57.144.0.0/14
+set security address-book global address META-66-220-144-0_20 66.220.144.0/20
+set security address-book global address META-69-63-176-0_20 69.63.176.0/20
+set security address-book global address META-69-171-224-0_19 69.171.224.0/19
+set security address-book global address META-74-119-76-0_22 74.119.76.0/22
+set security address-book global address META-102-132-96-0_20 102.132.96.0/20
+set security address-book global address META-103-4-96-0_22 103.4.96.0/22
+set security address-book global address META-129-134-0-0_17 129.134.0.0/17
+set security address-book global address META-157-240-0-0_16 157.240.0.0/16
+set security address-book global address META-163-70-128-0_17 163.70.128.0/17
+set security address-book global address META-163-77-128-0_20 163.77.128.0/20
+set security address-book global address META-173-252-64-0_18 173.252.64.0/18
+set security address-book global address META-179-60-192-0_22 179.60.192.0/22
+set security address-book global address META-185-60-216-0_22 185.60.216.0/22
+set security address-book global address META-185-89-216-0_22 185.89.216.0/22
+set security address-book global address META-204-15-20-0_22 204.15.20.0/22
 
-BASE="/var/lib/docker/volumes/data-access_openobserve_enterprise_data/_data/stream/files/default/logs"
-
-KEEP_DAYS=14
-CUTOFF=$(date -d "$KEEP_DAYS days ago" +%Y%m%d)
-
-for TYPE in syslog netflow; do
-    find "$BASE/$TYPE" -mindepth 3 -maxdepth 3 -type d | while read DIR; do
-        YEAR=$(basename "$(dirname "$(dirname "$DIR")")")
-        MONTH=$(basename "$(dirname "$DIR")")
-        DAY=$(basename "$DIR")
-
-        DATE="${YEAR}${MONTH}${DAY}"
-
-        if [[ "$DATE" -lt "$CUTOFF" ]]; then
-            echo "Deleting $DIR"
-            rm -rf "$DIR"
-        fi
-    done
-done
-
-# Remove empty month/year directories
-find "$BASE" -type d -empty -delete
-
-
-
-0 2 * * * /usr/local/bin/openobserve_cleanup.sh >> /var/log/openobserve_cleanup.log 2>&1
+set security address-book global address-set Meta-Group address META-31-13-0-0_17
+set security address-book global address-set Meta-Group address META-45-64-40-0_22
+set security address-book global address-set Meta-Group address META-57-141-0-0_27
+set security address-book global address-set Meta-Group address META-57-144-0-0_14
+set security address-book global address-set Meta-Group address META-66-220-144-0_20
+set security address-book global address-set Meta-Group address META-69-63-176-0_20
+set security address-book global address-set Meta-Group address META-69-171-224-0_19
+set security address-book global address-set Meta-Group address META-74-119-76-0_22
+set security address-book global address-set Meta-Group address META-102-132-96-0_20
+set security address-book global address-set Meta-Group address META-103-4-96-0_22
+set security address-book global address-set Meta-Group address META-129-134-0-0_17
+set security address-book global address-set Meta-Group address META-157-240-0-0_16
+set security address-book global address-set Meta-Group address META-163-70-128-0_17
+set security address-book global address-set Meta-Group address META-163-77-128-0_20
+set security address-book global address-set Meta-Group address META-173-252-64-0_18
+set security address-book global address-set Meta-Group address META-179-60-192-0_22
+set security address-book global address-set Meta-Group address META-185-60-216-0_22
+set security address-book global address-set Meta-Group address META-185-89-216-0_22
+set security address-book global address-set Meta-Group address META-204-15-20-0_22
