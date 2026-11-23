@@ -1,0 +1,469 @@
+{
+  "pipeline_id": "7528376255280840704",
+  "version": 0,
+  "enabled": true,
+  "org": "default",
+  "name": "sudarshan-log-segregation",
+  "description": "Sudarshan Logs (OPENOBSERVE.md): classify every syslog message (firewall, Juniper SRX, router, switch, WAF; many vendors) and copy it to logs_<route>; all messages stay in syslog.",
+  "source": {
+    "source_type": "realtime",
+    "org_id": "default",
+    "stream_name": "syslog",
+    "stream_type": "logs"
+  },
+  "nodes": [
+    {
+      "id": "source",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "syslog",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 400,
+        "y": 0
+      },
+      "io_type": "input",
+      "is_disabled": false
+    },
+    {
+      "id": "classify",
+      "data": {
+        "node_type": "function",
+        "name": "sudarshan_log_classify",
+        "after_flatten": true,
+        "num_args": 0,
+        "raw_fn": null
+      },
+      "position": {
+        "x": 400,
+        "y": 140
+      },
+      "io_type": "default",
+      "is_disabled": false
+    },
+    {
+      "id": "all",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "syslog",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 0,
+        "y": 300
+      },
+      "io_type": "output",
+      "is_disabled": false
+    },
+    {
+      "id": "if_juniper_srx",
+      "data": {
+        "node_type": "condition",
+        "version": 2,
+        "conditions": {
+          "filterType": "group",
+          "logicalOperator": "AND",
+          "conditions": [
+            {
+              "filterType": "condition",
+              "column": "log_route",
+              "operator": "=",
+              "value": "juniper_srx",
+              "logicalOperator": "AND"
+            }
+          ]
+        }
+      },
+      "position": {
+        "x": 200,
+        "y": 300
+      },
+      "io_type": "default",
+      "is_disabled": false
+    },
+    {
+      "id": "to_juniper_srx",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "logs_juniper_srx",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 200,
+        "y": 460
+      },
+      "io_type": "output",
+      "is_disabled": false
+    },
+    {
+      "id": "if_firewall",
+      "data": {
+        "node_type": "condition",
+        "version": 2,
+        "conditions": {
+          "filterType": "group",
+          "logicalOperator": "AND",
+          "conditions": [
+            {
+              "filterType": "condition",
+              "column": "log_route",
+              "operator": "=",
+              "value": "firewall",
+              "logicalOperator": "AND"
+            }
+          ]
+        }
+      },
+      "position": {
+        "x": 430,
+        "y": 300
+      },
+      "io_type": "default",
+      "is_disabled": false
+    },
+    {
+      "id": "to_firewall",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "logs_firewall",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 430,
+        "y": 460
+      },
+      "io_type": "output",
+      "is_disabled": false
+    },
+    {
+      "id": "if_router",
+      "data": {
+        "node_type": "condition",
+        "version": 2,
+        "conditions": {
+          "filterType": "group",
+          "logicalOperator": "AND",
+          "conditions": [
+            {
+              "filterType": "condition",
+              "column": "log_route",
+              "operator": "=",
+              "value": "router",
+              "logicalOperator": "AND"
+            }
+          ]
+        }
+      },
+      "position": {
+        "x": 660,
+        "y": 300
+      },
+      "io_type": "default",
+      "is_disabled": false
+    },
+    {
+      "id": "to_router",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "logs_router",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 660,
+        "y": 460
+      },
+      "io_type": "output",
+      "is_disabled": false
+    },
+    {
+      "id": "if_switch",
+      "data": {
+        "node_type": "condition",
+        "version": 2,
+        "conditions": {
+          "filterType": "group",
+          "logicalOperator": "AND",
+          "conditions": [
+            {
+              "filterType": "condition",
+              "column": "log_route",
+              "operator": "=",
+              "value": "switch",
+              "logicalOperator": "AND"
+            }
+          ]
+        }
+      },
+      "position": {
+        "x": 890,
+        "y": 300
+      },
+      "io_type": "default",
+      "is_disabled": false
+    },
+    {
+      "id": "to_switch",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "logs_switch",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 890,
+        "y": 460
+      },
+      "io_type": "output",
+      "is_disabled": false
+    },
+    {
+      "id": "if_waf",
+      "data": {
+        "node_type": "condition",
+        "version": 2,
+        "conditions": {
+          "filterType": "group",
+          "logicalOperator": "AND",
+          "conditions": [
+            {
+              "filterType": "condition",
+              "column": "log_route",
+              "operator": "=",
+              "value": "waf",
+              "logicalOperator": "AND"
+            }
+          ]
+        }
+      },
+      "position": {
+        "x": 1120,
+        "y": 300
+      },
+      "io_type": "default",
+      "is_disabled": false
+    },
+    {
+      "id": "to_waf",
+      "data": {
+        "node_type": "stream",
+        "org_id": "default",
+        "stream_name": "logs_waf",
+        "stream_type": "logs"
+      },
+      "position": {
+        "x": 1120,
+        "y": 460
+      },
+      "io_type": "output",
+      "is_disabled": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "esource-classify",
+      "source": "source",
+      "target": "classify",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eclassify-all",
+      "source": "classify",
+      "target": "all",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eclassify-if_juniper_srx",
+      "source": "classify",
+      "target": "if_juniper_srx",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eif_juniper_srx-to_juniper_srx",
+      "source": "if_juniper_srx",
+      "target": "to_juniper_srx",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eclassify-if_firewall",
+      "source": "classify",
+      "target": "if_firewall",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eif_firewall-to_firewall",
+      "source": "if_firewall",
+      "target": "to_firewall",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eclassify-if_router",
+      "source": "classify",
+      "target": "if_router",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eif_router-to_router",
+      "source": "if_router",
+      "target": "to_router",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eclassify-if_switch",
+      "source": "classify",
+      "target": "if_switch",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eif_switch-to_switch",
+      "source": "if_switch",
+      "target": "to_switch",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eclassify-if_waf",
+      "source": "classify",
+      "target": "if_waf",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    },
+    {
+      "id": "eif_waf-to_waf",
+      "source": "if_waf",
+      "target": "to_waf",
+      "markerEnd": {
+        "type": "arrowclosed",
+        "width": 20,
+        "height": 20
+      },
+      "type": "custom",
+      "style": {
+        "strokeWidth": 2
+      },
+      "animated": true,
+      "updatable": true
+    }
+  ],
+  "paused_at": null,
+  "type": "realtime",
+  "stream_name": "syslog",
+  "stream_type": "logs",
+  "frequency": "--",
+  "period": "--",
+  "cron": "--",
+  "sql_query": "--"
+}
